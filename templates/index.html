@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Prediction</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            font-size: 24px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        Diabetes Prediction
+                    </div>
+                    <div class="card-body">
+                        <form id="prediction-form">
+                            <div class="form-group">
+                                <label for="age">Age (years)</label>
+                                <input type="number" class="form-control" id="age" name="age" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sex">Sex</label>
+                                <select class="form-control" id="sex" name="sex" required>
+                                    <option value="0">Female</option>
+                                    <option value="1">Male</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bmi">Body Mass Index (BMI)</label>
+                                <input type="number" step="0.1" class="form-control" id="bmi" name="bmi" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bp">Average Blood Pressure (bp)</label>
+                                <input type="number" step="0.1" class="form-control" id="bp" name="bp" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="s1">Total Serum Cholesterol (tc)</label>
+                                <input type="number" step="0.1" class="form-control" id="s1" name="s1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="s2">Low-Density Lipoproteins (ldl)</label>
+                                <input type="number" step="0.1" class="form-control" id="s2" name="s2" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="s3">High-Density Lipoproteins (hdl)</label>
+                                <input type="number" step="0.1" class="form-control" id="s3" name="s3" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="s4">Total Cholesterol/HDL</label>
+                                <input type="number" step="0.1" class="form-control" id="s4" name="s4" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="s5">Log of Serum Triglycerides Level</label>
+                                <input type="number" step="0.1" class="form-control" id="s5" name="s5" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="s6">Serum Glucose Level</label>
+                                <input type="number" step="0.1" class="form-control" id="s6" name="s6" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Predict</button>
+                        </form>
+                        <div id="prediction-result" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const formObject = Object.fromEntries(formData.entries());
+            fetch('{{ url_for("predict") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formObject)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('prediction-result');
+                if (data.error) {
+                    resultDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="alert alert-success">Prediction: ${data.prediction}</div>`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
