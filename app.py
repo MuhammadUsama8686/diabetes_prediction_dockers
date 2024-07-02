@@ -2,7 +2,7 @@ import pickle
 from flask import Flask, request, url_for, jsonify, render_template
 import numpy as np 
 import pandas as pd
-
+import os
 # Load the trained model
 
 with open('model.pkl', 'rb') as f:
@@ -19,33 +19,6 @@ def home():
     return render_template('index.html')
 
 
-# @app.route('/predict', methods=['POST'])
-# def predict():
-#     try:
-#         # Ensure the data is received correctly
-#         data = request.json
-#         if not data:
-#             return jsonify({'error': 'No data received'})
-        
-#         print("Received data:", data)
-        
-#         # Convert data to float
-#         data = {k: float(v) for k, v in data.items()}
-#         print("Processed data:", data)
-        
-#         # Check if the correct number of features are present
-#         if len(data) != 10:
-#             return jsonify({'error': f'Expected 10 features, got {len(data)}'})
-        
-#         # Transform data using scaler
-#         new_data = scaler.transform(np.array(list(data.values())).reshape(1, -1))
-#         prediction = model.predict(new_data)
-        
-#         return jsonify({'prediction': int(prediction[0])})
-#     except Exception as e:
-#         return jsonify({'error': str(e)})
-
-#  return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -74,7 +47,8 @@ def predict():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=os.getenv("PORT", default=5000), host='0.0.0.0')
+
 
 
     
